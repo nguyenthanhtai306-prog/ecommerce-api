@@ -1,51 +1,110 @@
 # Ecommerce API
 
-RESTful API for an e-commerce system built with Node.js, Express.js, Prisma ORM, and PostgreSQL.
+RESTful API cho hệ thống thương mại điện tử, xây dựng bằng Node.js, Express.js, Prisma và PostgreSQL.
 
-## Technologies
+## 1. Công nghệ sử dụng
+
 - Node.js
 - Express.js
 - Prisma ORM
 - PostgreSQL
-- Docker and Docker Compose
 - JWT Authentication
-- bcryptjs
+- Docker và Docker Compose
+- Postman để kiểm thử API
 
-## Features
-- User registration
-- User login
-- JWT authentication
-- Protected user profile endpoint
-- API health check
-- PostgreSQL database running with Docker
-- Docker Compose health checks
+## 2. Chức năng
 
-## API Endpoints
+- Đăng ký tài khoản
+- Đăng nhập bằng JWT
+- Xác thực người dùng
+- Xem danh sách sản phẩm
+- Xem chi tiết sản phẩm
+- Thêm sản phẩm
+- Cập nhật sản phẩm
+- Xóa sản phẩm
+- Kiểm tra tình trạng hoạt động của API
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/` | Check API status |
-| GET | `/health` | Health check |
-| POST | `/api/auth/register` | Register a user |
-| POST | `/api/auth/login` | Login |
-| GET | `/api/auth/me` | Get authenticated user information |
+## 3. Chạy dự án bằng Docker
 
-## Run with Docker
+Yêu cầu: đã cài Docker Desktop.
 
-1. Configure the environment variables in `.env`.
-2. Start the containers:
+Clone repository:
+
+```bash
+git clone https://github.com/nguyenthanhtai306-prog/ecommerce-api.git
+cd ecommerce-api
+```
+
+Tạo file `.env` ở thư mục gốc:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ecommerce_db"
+JWT_SECRET="thay_bang_chuoi_bi_mat_manh"
+PORT=3000
+```
+
+Khởi động hệ thống:
 
 ```bash
 docker compose up -d --build
 ```
 
-3. Check container status:
+Kiểm tra trạng thái:
 
 ```bash
 docker compose ps
 ```
 
-4. Test the health endpoint at `http://localhost:3000/health`.
+API mặc định chạy tại `http://localhost:3000`.
 
-## Security
-Do not commit `.env` or expose database credentials and JWT secrets.
+## 4. API Endpoints
+
+### Authentication
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| POST | `/api/auth/register` | Đăng ký |
+| POST | `/api/auth/login` | Đăng nhập |
+| GET | `/api/auth/me` | Thông tin người dùng đã xác thực |
+
+### Products
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/products` | Danh sách sản phẩm |
+| GET | `/api/products/:id` | Chi tiết sản phẩm |
+| POST | `/api/products` | Thêm sản phẩm |
+| PUT | `/api/products/:id` | Cập nhật sản phẩm |
+| DELETE | `/api/products/:id` | Xóa sản phẩm |
+
+### Health Check
+
+`GET /health` — kiểm tra trạng thái API.
+
+## 5. Kiểm thử
+
+Sử dụng Postman để gửi request đến `http://localhost:3000`.
+
+Ví dụ thêm sản phẩm:
+
+```json
+{
+  "pname": "Ban phim co",
+  "price": 450000,
+  "quantity": 15
+}
+```
+
+## 6. Dừng hệ thống
+
+```bash
+docker compose down
+```
+
+Dữ liệu PostgreSQL được lưu trong Docker volume nên vẫn được giữ lại khi chỉ chạy lệnh trên.
+
+## 7. Bảo mật
+
+- Không commit file `.env` lên GitHub.
+- Sử dụng JWT để xác thực người dùng.
+- Không lưu mật khẩu dưới dạng văn bản thuần.
