@@ -1,15 +1,31 @@
 
 name: Ecommerce API Tests
 
-'on':
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+'on': [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ecommerce_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ecommerce_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ecommerce_db
+      JWT_SECRET: test_secret_for_ci_only
+      PORT: 3000
 
     steps:
       - name: Checkout repository
@@ -26,9 +42,9 @@ jobs:
 
       - name: Create test environment
         run: |
-          echo 'DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ecommerce_db"' > .env
-          echo 'JWT_SECRET="test_secret_for_ci_only"' >> .env
-          echo 'PORT=3000' >> .env
+          echo "DATABASE_URL=$DATABASE_URL" > .env
+          echo "JWT_SECRET=$JWT_SECRET" >> .env
+          echo "PORT=$PORT" >> .env
 
       - name: Run automated tests
-        run: npm test
+        run: npm test -- --detectOpenHandles
